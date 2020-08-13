@@ -13,13 +13,14 @@ class EmacsMac < Formula
   option "with-rsvg", "Build with rsvg support"
   option "with-ctags", "Don't remove the ctags executable that emacs provides"
   option "with-no-title-bars", "Build with a patch for no title bars on frames (--HEAD is not supported)"
-  option "with-natural-title-bar", 
+  option "with-natural-title-bar",
          "Build with a patch for title bar color inferred by theme (--HEAD is not supported)"
   option "with-modern-icon", "Using a modern style Emacs icon by @tpanum"
   option "with-spacemacs-icon", "Using the spacemacs Emacs icon by Nasser Alshammari"
   option "with-gnu-head-icon", "Using a Bold GNU Head icon by Aurélio A. Heckert"
   option "with-emacs-sexy-icon", "Using the Emacs Sexy icon by @picandocodigo"
   option "with-starter", "Build with a starter script to start emacs GUI from CLI"
+  option "with-jansson", "Build with jansson support (--HEAD only)"
 
   # Update list from
   # https://raw.githubusercontent.com/emacsfodder/emacs-icons-project/master/icons.json
@@ -58,6 +59,7 @@ class EmacsMac < Formula
   depends_on "libxml2" if build.with? "xml2"
   depends_on "glib" => :optional
   depends_on "imagemagick" => :optional
+  depends_on "jansson" => :optional
 
   emacs_icons_project_icons.each do |icon, sha|
     resource "emacs-icons-project-#{icon}" do
@@ -113,6 +115,11 @@ class EmacsMac < Formula
     ]
     args << "--with-modules"
     args << "--with-rsvg" if build.with? "rsvg"
+    if build.with? "jansson"
+      odie "--with-jansson is supported only on --HEAD" unless build.head?
+
+      args << "--with-json"
+    end
 
     icons_dir = buildpath/"mac/Emacs.app/Contents/Resources"
 
